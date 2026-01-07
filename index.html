@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TravelDesk – Bus Reservation System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🚌 TravelDesk – Bus Reservation System</h1>
+
+<!-- ================= FARE TABLE ================= -->
+<h2>Available Buses & Fare</h2>
+<table>
+    <tr>
+        <th>Bus No</th>
+        <th>Route</th>
+        <th>Fare (₹)</th>
+        <th>Total Seats</th>
+    </tr>
+    <tr>
+        <td>TD101</td>
+        <td>Indore → Bhopal</td>
+        <td>450</td>
+        <td>40</td>
+    </tr>
+    <tr>
+        <td>TD102</td>
+        <td>Indore → Ujjain</td>
+        <td>250</td>
+        <td>35</td>
+    </tr>
+    <tr>
+        <td>TD103</td>
+        <td>Bhopal → Jabalpur</td>
+        <td>650</td>
+        <td>45</td>
+    </tr>
+</table>
+
+<hr>
+
+<!-- ================= BOOK SEAT ================= -->
+<h2>🎟 Book Seat</h2>
+<div class="form-section">
+    <label>Bus Number:</label>
+    <select id="bookBus">
+        <option value="TD101">TD101</option>
+        <option value="TD102">TD102</option>
+        <option value="TD103">TD103</option>
+    </select><br>
+
+    <label>Passenger Name:</label>
+    <input type="text" id="name"><br>
+
+    <label>Age:</label>
+    <input type="number" id="age"><br>
+
+    <label>Gender:</label>
+    <select id="gender">
+        <option>Male</option>
+        <option>Female</option>
+    </select><br>
+
+    <label>Seat Number:</label>
+    <input type="number" id="seat"><br>
+
+    <button class="book-btn" onclick="bookSeat()">Book Seat</button>
+
+</div>
+
+<hr>
+
+<!-- ================= CANCEL SEAT ================= -->
+<h2>❌ Cancel Seat</h2>
+<div class="form-section">
+    <label>Bus Number:</label>
+    <select id="cancelBus">
+        <option value="TD101">TD101</option>
+        <option value="TD102">TD102</option>
+        <option value="TD103">TD103</option>
+    </select><br>
+
+    <label>Seat Number:</label>
+    <input type="number" id="cancelSeat"><br>
+
+    <button class="cancel-btn" onclick="cancelSeat()">Cancel Seat</button>
+</div>
+
+<hr>
+
+<!-- ================= PASSENGER LIST ================= -->
+<h2>👤 Passenger List</h2>
+<div id="passengerList"></div>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+const buses = {
+    TD101: { route: "Indore → Bhopal", fare: 450, passengers: [] },
+    TD102: { route: "Indore → Ujjain", fare: 250, passengers: [] },
+    TD103: { route: "Bhopal → Jabalpur", fare: 650, passengers: [] }
+};
+
+function bookSeat() {
+    const busNo = document.getElementById("bookBus").value;
+    const name = document.getElementById("name").value.trim();
+    const age = document.getElementById("age").value;
+    const gender = document.getElementById("gender").value;
+    const seat = document.getElementById("seat").value;
+
+    if (!name || !age || !seat) {
+        alert("Please fill all details");
+        return;
+    }
+
+    const bus = buses[busNo];
+    const alreadyBooked = bus.passengers.find(p => p.seat == seat);
+
+    if (alreadyBooked) {
+        alert("Seat already booked!");
+        return;
+    }
+
+    bus.passengers.push({ name, age, gender, seat });
+    alert(`Seat Booked Successfully!\nBus: ${busNo}\nFare: ₹${bus.fare}`);
+    displayPassengers();
+    clearBookingFields();
+}
+
+function cancelSeat() {
+    const busNo = document.getElementById("cancelBus").value;
+    const seatNo = document.getElementById("cancelSeat").value;
+
+    const bus = buses[busNo];
+    const index = bus.passengers.findIndex(p => p.seat == seatNo);
+
+    if (index === -1) {
+        alert("Seat not found!");
+        return;
+    }
+
+    bus.passengers.splice(index, 1);
+    alert(`Seat ${seatNo} cancelled successfully`);
+    displayPassengers();
+}
+
+function displayPassengers() {
+    const list = document.getElementById("passengerList");
+    list.innerHTML = "";
+
+    for (let busNo in buses) {
+        buses[busNo].passengers.forEach(p => {
+            list.innerHTML += `
+                <div class="passenger-item">
+                    <strong>${p.name}</strong> | Bus: ${busNo} (${buses[busNo].route}) | Seat: ${p.seat} | Age: ${p.age} | Gender: ${p.gender}
+                </div>
+            `;
+        });
+    }
+
+    if (list.innerHTML === "") {
+        list.innerHTML = "<p>No passengers booked yet.</p>";
+    }
+}
+
+function clearBookingFields() {
+    document.getElementById("name").value = "";
+    document.getElementById("age").value = "";
+    document.getElementById("seat").value = "";
+}
+</script>
+
+</body>
+</html>
